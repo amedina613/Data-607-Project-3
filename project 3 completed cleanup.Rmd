@@ -1,0 +1,78 @@
+---
+title: "Project 3 connect to database"
+author: "Keith DeNivo"
+date: "2024-03-13"
+output: html_document
+---
+```{r packages}
+library(RODBC)
+library(RSQLite)
+library(RMySQL)
+library(DBI)
+library(odbc)
+library(dplyr)
+library(dbplyr)
+library(RPostgres)
+library(sqldf)
+```
+Tried a lot of packages to connect to the database. I believe the only one required is the RMySQL. 
+
+``` {r connection_to_db}
+
+vectorpass <- c('t','h','e','q','u','i','c','k','b','r','o','w','n','f','o','x','j','u','m','p','o','v','e','r','l','a','z','y','d','o','g','0','1','2','3','4','5','6','7','8','9',".")
+#list of alphanumeric characters to make the password into a simple code.
+
+pass = paste(vectorpass[8],vectorpass[3],vectorpass[6],vectorpass[1],vectorpass[2],vectorpass[42],vectorpass[29],vectorpass[3],vectorpass[13],vectorpass[6],vectorpass[22],vectorpass[11],vectorpass[36],vectorpass[41],sep="")
+#constructing the password from the list
+
+mysqlconnection <- dbConnect(RMySQL::MySQL(),
+
+                             host="cunydata607sql.mysql.database.azure.com",
+
+                             dbname = "keith.denivo49",
+
+                             port=3306,
+
+                             user="keith.denivo49",
+
+                             password=pass)
+#connecting to database.
+src_dbi(mysqlconnection)
+#lists all the tables in the database with tbls.
+
+```
+the password is just keith.denivo49.  i copied and pasted what i did for assignment 2 because it was working.
+
+```{r dataframe }
+
+soft_skills_df <- dbReadTable(mysqlconnection, "soft_skills")
+job_names_df <- dbReadTable(mysqlconnection, "job_names_untidy")
+technical_skills_df <- dbReadTable(mysqlconnection, "technical_skills")
+#read tables from database into a dataframe.
+View(soft_skills_df)
+View(job_names_df)
+View(technical_skills_df)
+
+```
+puts each table into a data frame. i put the view so they can be seen.
+
+
+```{r}
+
+# Extracting the rows and columns from the job names data frame and putting them into 4 separate data frames 
+job_names_one<- job_names_df[1:21, 1:4]
+job_names_one<- job_names_one[-1, ]
+colnames(job_names_one)<- c("Primary Key", "Job Posting Link", "Job Title", "Company")
+job_names_two<- job_names_df[1:21, 5:8]
+job_names_two<- job_names_two[-1, ]
+colnames(job_names_two)<- c("Primary Key", "Job Posting Link", "Job Title", "Company")
+job_names_three<- job_names_df[1:21, 9:12]
+job_names_three<- job_names_three[-1, ]
+colnames(job_names_three)<- c("Primary Key", "Job Posting Link", "Job Title", "Company")
+job_names_four<- job_names_df[1:21, 13:16]
+job_names_four<- job_names_four[-1, ]
+colnames(job_names_four)<- c("Primary Key", "Job Posting Link", "Job Title", "Company")
+
+# Combining the four separate data frames
+jc<- rbind(job_names_one, job_names_two, job_names_three, job_names_four)
+```
