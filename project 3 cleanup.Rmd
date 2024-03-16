@@ -92,4 +92,22 @@ soft_vec3 <- soft_vec2[ -c(1) ] %>%
 
 ```
 
+```{r}
 
+# Extracting the rows and columns from the job names data frame and putting them into 4 separate data frames 
+job_names_one<- job_names_df[1:21, 1:4]
+job_names_one<- job_names_one[-1, ]
+colnames(job_names_one)<- c("Primary Key", "Job Posting Link", "Job Title", "Company")
+job_names_two<- job_names_df[1:21, 5:8]
+job_names_two<- job_names_two[-1, ]
+colnames(job_names_two)<- c("Primary Key", "Job Posting Link", "Job Title", "Company")
+job_names_three<- job_names_df[1:21, 9:12]
+job_names_three<- job_names_three[-1, ]
+colnames(job_names_three)<- c("Primary Key", "Job Posting Link", "Job Title", "Company")
+job_names_four<- job_names_df[1:21, 13:16]
+job_names_four<- job_names_four[-1, ]
+colnames(job_names_four)<- c("Primary Key", "Job Posting Link", "Job Title", "Company")
+
+# Combining the four separate data frames
+jc<- rbind(job_names_one, job_names_two, job_names_three, job_names_four)
+```
