@@ -158,7 +158,7 @@ Communication is the most prevalent soft skill among the job postings we sampled
 # Get the top 10 soft skills
 top_10_soft_skills <- head(sort(soft_skills_counts, decreasing = TRUE), 10)
 
-# Create the bar plot with colors defined inline
+# Create the bar plot 
 barplot(top_10_soft_skills, 
         col = rainbow(length(top_10_soft_skills)),
         main = "Top 10 Soft Skills",
@@ -168,7 +168,7 @@ barplot(top_10_soft_skills,
         cex.names = 0.8,
         xaxt = "n")  # Remove x-axis labels
 
-# Add a legend with smaller font size and two columns
+# Add a legend 
 legend("topright", 
        legend = names(top_10_soft_skills), 
        fill = rainbow(length(top_10_soft_skills)),
@@ -215,12 +215,12 @@ barplot(top_ten_tech_skills,
         cex.names = 0.8,
          xaxt = "n")
 
-# Create a legend for the color palette
+# Create a legend 
 legend("topright", 
        legend = names(top_ten_tech_skills), 
        fill = heat.colors(length(top_ten_tech_skills)),
        title = "Technical Skills",
-       cex = 0.5)  # Set the font size of the legend
+       cex = 0.5)  
 ```
 
 # Combine all data frames for a merged data frame anyone can use
