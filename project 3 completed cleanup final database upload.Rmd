@@ -133,6 +133,7 @@ colnames(softskills_final)[2] <- "Soft Skills"
 
 
 # Soft Skills analysis
+
 <b><header>Identify the most prevalent soft skill among the sampled job postings: </header></b>
 ```{r soft skills analysis}
 # Split the Soft Skills column into individual soft skills
@@ -147,18 +148,18 @@ soft_skills_counts <- table(softskills_split)
 # Find the soft skill with the highest count
 most_valued_soft_skill <- names(which.max(soft_skills_counts))
 
-# Print the most abundant soft skill
+# Print the most prevalent soft skill
 print(most_valued_soft_skill)
 ```
 
 Communication is the most prevalent soft skill among the job postings we sampled.
 
-<b><header>Identfy the top 10 soft skills:</header></b>
+<b><header>Identify the top 10 soft skills:</header></b>
 ```{r soft skills analysis 2}
 # Get the top 10 soft skills
 top_10_soft_skills <- head(sort(soft_skills_counts, decreasing = TRUE), 10)
 
-# Create the bar plot with colors defined inline
+# Create the bar 
 barplot(top_10_soft_skills, 
         col = rainbow(length(top_10_soft_skills)),
         main = "Top 10 Soft Skills",
@@ -168,7 +169,7 @@ barplot(top_10_soft_skills,
         cex.names = 0.8,
         xaxt = "n")  # Remove x-axis labels
 
-# Add a legend with smaller font size and two columns
+# Add a legend
 legend("topright", 
        legend = names(top_10_soft_skills), 
        fill = rainbow(length(top_10_soft_skills)),
@@ -202,6 +203,7 @@ print(top_tech_skill)
 
 Python is the most prevalent technical skill among the job postings we sampled. 
 <b><header>Identify the top 10 technical skills:</header></b>
+
 ```{r tech skills 2}
 top_ten_tech_skills <- head(sort(technical_skills_counts, decreasing = TRUE), 10)
 
@@ -215,15 +217,16 @@ barplot(top_ten_tech_skills,
         cex.names = 0.8,
          xaxt = "n")
 
-# Create a legend for the color palette
+# Create a legend
 legend("topright", 
        legend = names(top_ten_tech_skills), 
        fill = heat.colors(length(top_ten_tech_skills)),
        title = "Technical Skills",
-       cex = 0.5)  # Set the font size of the legend
+       cex = 0.5)  
 ```
 
 # Combine all data frames for a merged data frame anyone can use
+
 ```{r combined}
 #Rename to match the other "Primary Key" column names
 names(technical_skills_df)[names(technical_skills_df) == "Primary.Key"] <- "Primary Key"
