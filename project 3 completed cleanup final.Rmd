@@ -57,7 +57,7 @@ View(technical_skills_df)
 ```
 puts each table into a data frame. i put the view so they can be seen.
 
-
+# Job Names Tidying
 ```{r}
 
 # Extracting the rows and columns from the job names data frame and putting them into 4 separate data frames 
@@ -77,16 +77,18 @@ colnames(job_names_four)<- c("Primary Key", "Job Posting Link", "Job Title", "Co
 # Combining the four separate data frames
 jc<- rbind(job_names_one, job_names_two, job_names_three, job_names_four)
 
-jn_df <- jc %>%
-mutate("platform" = str_extract(jc$`Job Posting Link`, "monster|linkedin|builtin|ziprecruiter"))
+jn_df_final <- jc %>%
+mutate("Platform" = str_extract(jc$`Job Posting Link`, "monster|linkedin|builtin|ziprecruiter"))
 
 
 ```
 
+
+# Soft Skills Tidying
 ```{r}
 #cleaning up some of the column names
 colnames(soft_skills_df)[1] <- "Primary Key" 
-colnames(soft_skills_df)[2] <- "comunication" 
+colnames(soft_skills_df)[2] <- "communication" 
 colnames(soft_skills_df)[3] <- "collaboration" 
 colnames(soft_skills_df)[13] <- "detail oriented" 
 colnames(soft_skills_df)[16] <- "cross functional" 
@@ -119,12 +121,133 @@ new_column <- apply(soft_skills_df, 1, create_new_column)
 soft_skills_df$NewColumn <- new_column
 
 # Print the modified dataframe
-print(soft_skills_df)
+View(soft_skills_df)
 
 ```
 
 ```{r}
 #filtering the columns to create a new dataframe
-softskills_final <- select(soft_skills_df, "Primary Key","NewColumn" )
+softskills_final <- select(soft_skills_df, "Primary Key", "NewColumn" )
 colnames(softskills_final)[2] <- "Soft Skills"
+```
+
+
+# Soft Skills analysis
+<b><header>Identify the most prevalent soft skill among the sampled job postings: </header></b>
+```{r}
+# Split the Soft Skills column into individual soft skills
+softskills_split <- unlist(strsplit(softskills_final$ "Soft Skills", ","))
+
+# Remove leading and trailing whitespaces
+softskills_split <- trimws(softskills_split)
+
+# Count the occurrences of each soft skill
+soft_skills_counts <- table(softskills_split)
+
+# Find the soft skill with the highest count
+most_valued_soft_skill <- names(which.max(soft_skills_counts))
+
+# Print the most abundant soft skill
+print(most_valued_soft_skill)
+```
+
+Communication is the most prevalent soft skill among the job postings we sampled.
+
+<b><header>Identfy the top 10 soft skills:</header></b>
+```{r}
+# Get the top 10 soft skills
+top_10_soft_skills <- head(sort(soft_skills_counts, decreasing = TRUE), 10)
+
+# Create the bar plot with colors defined inline
+barplot(top_10_soft_skills, 
+        col = rainbow(length(top_10_soft_skills)),
+        main = "Top 10 Soft Skills",
+        xlab = "Soft Skills",
+        ylab = "Frequency",
+        las = 2, 
+        cex.names = 0.8,
+        xaxt = "n")  # Remove x-axis labels
+
+# Add a legend with smaller font size and two columns
+legend("topright", 
+       legend = names(top_10_soft_skills), 
+       fill = rainbow(length(top_10_soft_skills)),
+       cex = 0.5,  # Set the font size of the legend
+       ncol = 2)   # Set the number of columns in the legend
+
+```
+
+# Technical Skills Analysis
+
+<b><header>Identify the most prevalent technical skill among the sampled job postings:</header></b>
+```{r}
+# Split the Technical Skills column into individual tech skills
+technical_skills_split <- unlist(strsplit(technical_skills_df$ "Technical.Skills", ","))
+
+# Remove leading and trailing whitespaces
+technical_skills_split <- trimws(technical_skills_split)
+
+# Convert all technical skills to lowercase to account for both "python" and "Python"
+technical_skills_lower <- tolower(technical_skills_split)
+
+# Count the occurrences of each technical skill
+technical_skills_counts <- table(technical_skills_lower)
+
+# Find the technical skill with the highest count
+top_tech_skill <- names(which.max(technical_skills_counts))
+
+# Print the most prevalent technical skill
+print(top_tech_skill)
+```
+
+Python is the most prevalent technical skill among the job postings we sampled. 
+<b><header>Identify the top 10 technical skills:</header></b>
+```{r}
+top_ten_tech_skills <- head(sort(technical_skills_counts, decreasing = TRUE), 10)
+
+# Create the bar plot
+barplot(top_ten_tech_skills,
+        col = heat.colors(length(top_ten_tech_skills)),
+        main = "Top 10 Most Prevalent Technical Skills",
+        xlab = "Technical Skills",
+        ylab = "Frequency",
+        las = 2, 
+        cex.names = 0.8,
+         xaxt = "n")
+
+# Create a legend for the color palette
+legend("topright", 
+       legend = names(top_ten_tech_skills), 
+       fill = heat.colors(length(top_ten_tech_skills)),
+       title = "Technical Skills",
+       cex = 0.5)  # Set the font size of the legend
+```
+
+# Combine all data frames for a merged data frame anyone can use
+```{r}
+#Rename to match the other "Primary Key" column names
+names(technical_skills_df)[names(technical_skills_df) == "Primary.Key"] <- "Primary Key"
+
+# Rename the "Technical.Skills" column for consistency
+names(technical_skills_df)[names(technical_skills_df) == "Technical.Skills"] <- "Technical Skills"
+
+# Check the modified column names
+print(names(technical_skills_df))
+```
+
+
+```{r}
+# Merge the data frames based on the "Primary Key" columns
+merged_df <- jn_df_final %>%
+              merge(softskills_final, by = "Primary Key") %>%
+              merge(technical_skills_df, by = "Primary Key")
+
+```
+
+```{r}
+#The primary key is not organized in numerical order due to the objects being characters. Convert them to numeric data types for effective use in the future.
+merged_df$`Primary Key` <- as.numeric(merged_df$`Primary Key`)
+
+#Check col names
+colnames(merged_df)
 ```
