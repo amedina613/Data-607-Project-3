@@ -6,7 +6,7 @@ output: html_document
 ---
 
 <header>Introduction:</header>
-The purpose of this project was to collect the most relevant job skills needed for data science positions.  Job descriptions from several job posting websites: Zip Recruiter, Linkedin, Builtin, and Monster were observed and the soft skills and technical skills were collected and put into a table.  The table was split up into smaller tables: Job names which contained the website link, primary key, position name, company, and platform the job was hosted. THe Job names table was put into an untidy format, then subsequently made tidy.  soft skills was put into a table where the most popular soft skills were put into columns and each post was labeled as having that soft skill or not.  the soft skills table was then made to be a list of every soft skill for each job post.  The technical skills was left in a tidy format.  These tables were merged together matching with the primary key column.  Analysis was done to find the most popular soft and technical skills.  All tables were uploaded into the database.
+The purpose of this project was to collect the most relevant job skills needed for data science positions.  Job descriptions from several job posting websites: Zip Recruiter, Linkedin, Builtin, and Monster were observed and the soft skills and technical skills were collected and put into a table.  The table was split up into smaller tables: "Job names" which contained the website link, primary key, position name, company, and platform the job was hosted. The "Job names" table was put into an untidy format, then subsequently made tidy.  "Soft skills" was put into a table where the most popular soft skills were put into columns and each post was labeled as having that soft skill or not.  The "soft skills" table was then made to be a list of every soft skill for each job post.  The "technical skills" table was left in a tidy format.  These tables were merged together matching with the primary key column.  Analysis was done to find the most popular soft and technical skills.  All tables were uploaded into the database.
 ```{r packages}
 library(RODBC)
 library(RSQLite)
@@ -133,7 +133,7 @@ new_column <- apply(soft_skills_df, 1, create_new_column)
 # Add the new column to the dataframe
 soft_skills_df$NewColumn <- new_column
 
-# Print the modified dataframe
+# Print
 View(soft_skills_df)
 
 ```
@@ -164,7 +164,7 @@ soft_skills_counts <- table(softskills_split)
 # Find the soft skill with the highest count
 most_valued_soft_skill <- names(which.max(soft_skills_counts))
 
-# Print the most abundant soft skill
+# Print the most prevalent soft skill
 print(most_valued_soft_skill)
 ```
 
@@ -175,7 +175,7 @@ Communication is the most prevalent soft skill among the job postings we sampled
 # Get the top 10 soft skills
 top_10_soft_skills <- head(sort(soft_skills_counts, decreasing = TRUE), 10)
 
-# Create the bar plot with colors defined inline
+# Create the bar plot 
 barplot(top_10_soft_skills, 
         col = rainbow(length(top_10_soft_skills)),
         main = "Top 10 Soft Skills",
@@ -185,11 +185,11 @@ barplot(top_10_soft_skills,
         cex.names = 0.8,
         xaxt = "n")  # Remove x-axis labels
 
-# Add a legend with smaller font size and two columns
+# Add a legend 
 legend("topright", 
        legend = names(top_10_soft_skills), 
        fill = rainbow(length(top_10_soft_skills)),
-       cex = 0.5,  # Set the font size of the legend
+       cex = 0.7,  # Set the font size of the legend
        ncol = 2)   # Set the number of columns in the legend
 
 ```
@@ -232,12 +232,12 @@ barplot(top_ten_tech_skills,
         cex.names = 0.8,
          xaxt = "n")
 
-# Create a legend for the color palette
+# Create a legend 
 legend("topright", 
        legend = names(top_ten_tech_skills), 
        fill = heat.colors(length(top_ten_tech_skills)),
        title = "Technical Skills",
-       cex = 0.5)  # Set the font size of the legend
+       cex = 0.6)  
 ```
 
 # Combine all data frames for a merged data frame anyone can use
