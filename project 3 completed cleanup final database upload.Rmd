@@ -1,9 +1,12 @@
 ---
-title: "Project 3 connect to database"
-author: "Keith DeNivo"
+title: "Project 3 Data Science Job Skills"
+author: "Keith DeNivo, Seyi Jimoh, Adriana Medina, Ursula Podosenin "
 date: "2024-03-13"
 output: html_document
 ---
+
+<header>Introduction:</header>
+The purpose of this project was to collect the most relevant job skills needed for data science positions.  Job descriptions from several job posting websites: Zip Recruiter, Linkedin, Builtin, and Monster were observed and the soft skills and technical skills were collected and put into a table.  The table was split up into smaller tables: Job names which contained the website link, primary key, position name, company, and platform the job was hosted. THe Job names table was put into an untidy format, then subsequently made tidy.  soft skills was put into a table where the most popular soft skills were put into columns and each post was labeled as having that soft skill or not.  the soft skills table was then made to be a list of every soft skill for each job post.  The technical skills was left in a tidy format.  These tables were merged together matching with the primary key column.  Analysis was done to find the most popular soft and technical skills.  All tables were uploaded into the database.
 ```{r packages}
 library(RODBC)
 library(RSQLite)
@@ -16,7 +19,10 @@ library(RPostgres)
 library(sqldf)
 library(tidyverse)
 ```
-Tried a lot of packages to connect to the database. I believe the only one required is the RMySQL. 
+<header>Libraries:</header>
+
+Database connection as well as data manipulating libraries were loaded.
+ 
 
 ``` {r connection_to_db}
 
@@ -42,7 +48,10 @@ src_dbi(mysqlconnection)
 #lists all the tables in the database with tbls.
 
 ```
-the password is just keith.denivo49.  i copied and pasted what i did for assignment 2 because it was working.
+<header>Connection:</header>
+The previously created database was successfully connected to.  The relevant csv files of the tables of job names untidy, soft skills, and technical skills were uploaded to the database using MySQL workbench.  The tables could then be read into a data frame.
+
+#Reading Tables into R
 
 ```{r dataframe }
 
@@ -50,12 +59,13 @@ soft_skills_df <- dbReadTable(mysqlconnection, "soft_skills")
 job_names_df <- dbReadTable(mysqlconnection, "job_names_untidy")
 technical_skills_df <- dbReadTable(mysqlconnection, "technical_skills")
 #read tables from database into a dataframe.
-#View(soft_skills_df)
-#View(job_names_df)
-#View(technical_skills_df)
+View(soft_skills_df)
+View(job_names_df)
+View(technical_skills_df)
 
 ```
-puts each table into a data frame. i put the view so they can be seen.
+<header>Data Frames:</header>
+Each Table was put into a dataframe.
 
 # Job Names Tidying
 ```{r Job names}
@@ -79,10 +89,11 @@ jc<- rbind(job_names_one, job_names_two, job_names_three, job_names_four)
 
 jn_df_final <- jc %>%
 mutate("Platform" = str_extract(jc$`Job Posting Link`, "monster|linkedin|builtin|ziprecruiter"))
-
+#extract the name of the website and put into a column.
 
 ```
-
+<header>Job Names Tidy:</header>
+Job names untidy was in a long format with each row having multiple job posting.  The data was made tidy by making each row to have the information of a single job positing.  
 
 # Soft Skills Tidying
 ```{r soft skills}
@@ -97,6 +108,8 @@ colnames(soft_skills_df)[20] <- "fast paced"
 colnames(soft_skills_df)[28] <- "driven" 
 colnames(soft_skills_df)[30] <- "critical thinking" 
 ```
+<header>Soft skills Cleaning:</header>
+ Initially some the column names were renamed.
 
 ```{r soft skills 2}
 # Function to create new column excluding the first column
@@ -124,16 +137,19 @@ soft_skills_df$NewColumn <- new_column
 View(soft_skills_df)
 
 ```
-
+<header>Soft skills Cleaning:</header>
+ If the soft skill was observed in a particular job post then it was assigned a 1 if it was not it was assigned a 0 in the original table.  If the word had a zero nothing was extracted, if it had a one it was extracted and put into a column with each word separated with a comma.
+ 
+ 
 ```{r soft skills 3}
 #filtering the columns to create a new dataframe
 softskills_final <- select(soft_skills_df, "Primary Key", "NewColumn" )
 colnames(softskills_final)[2] <- "Soft Skills"
 ```
-
+<header>Soft skills data frame:</header>
+ the new column with the soft skills was put together with the primary key for each job posting.
 
 # Soft Skills analysis
-
 <b><header>Identify the most prevalent soft skill among the sampled job postings: </header></b>
 ```{r soft skills analysis}
 # Split the Soft Skills column into individual soft skills
@@ -148,18 +164,18 @@ soft_skills_counts <- table(softskills_split)
 # Find the soft skill with the highest count
 most_valued_soft_skill <- names(which.max(soft_skills_counts))
 
-# Print the most prevalent soft skill
+# Print the most abundant soft skill
 print(most_valued_soft_skill)
 ```
 
 Communication is the most prevalent soft skill among the job postings we sampled.
 
-<b><header>Identify the top 10 soft skills:</header></b>
+<b><header>Identfy the top 10 soft skills:</header></b>
 ```{r soft skills analysis 2}
 # Get the top 10 soft skills
 top_10_soft_skills <- head(sort(soft_skills_counts, decreasing = TRUE), 10)
 
-# Create the bar 
+# Create the bar plot with colors defined inline
 barplot(top_10_soft_skills, 
         col = rainbow(length(top_10_soft_skills)),
         main = "Top 10 Soft Skills",
@@ -169,7 +185,7 @@ barplot(top_10_soft_skills,
         cex.names = 0.8,
         xaxt = "n")  # Remove x-axis labels
 
-# Add a legend
+# Add a legend with smaller font size and two columns
 legend("topright", 
        legend = names(top_10_soft_skills), 
        fill = rainbow(length(top_10_soft_skills)),
@@ -203,7 +219,6 @@ print(top_tech_skill)
 
 Python is the most prevalent technical skill among the job postings we sampled. 
 <b><header>Identify the top 10 technical skills:</header></b>
-
 ```{r tech skills 2}
 top_ten_tech_skills <- head(sort(technical_skills_counts, decreasing = TRUE), 10)
 
@@ -217,16 +232,15 @@ barplot(top_ten_tech_skills,
         cex.names = 0.8,
          xaxt = "n")
 
-# Create a legend
+# Create a legend for the color palette
 legend("topright", 
        legend = names(top_ten_tech_skills), 
        fill = heat.colors(length(top_ten_tech_skills)),
        title = "Technical Skills",
-       cex = 0.5)  
+       cex = 0.5)  # Set the font size of the legend
 ```
 
 # Combine all data frames for a merged data frame anyone can use
-
 ```{r combined}
 #Rename to match the other "Primary Key" column names
 names(technical_skills_df)[names(technical_skills_df) == "Primary.Key"] <- "Primary Key"
@@ -246,7 +260,7 @@ merged_df <- jn_df_final %>%
               merge(technical_skills_df, by = "Primary Key")
 
 ```
-
+Data frames were merged by primary key column.
 ```{r fix primary key}
 #The primary key is not organized in numerical order due to the objects being characters. Convert them to numeric data types for effective use in the future.
 merged_df$`Primary Key` <- as.numeric(merged_df$`Primary Key`)
@@ -254,36 +268,39 @@ merged_df$`Primary Key` <- as.numeric(merged_df$`Primary Key`)
 #Check col names
 colnames(merged_df)
 ```
-
+# Upload the data frames to the database:
 ```{r upload data}
 
 
 conn <-  mysqlconnection
-merged_df |> 
-dbCreateTable(con = conn, 
-             name = "merged_df", 
-             value = merged_df, 
-             field.types = c(`Primary Key`="INTEGER(max)",
-             `Job Posting Link`="varchar(max)",
-             `Job Title`="varchar(max)",
-             Company="varchar(max)",
-             Platform="varchar(max)",
-             `Soft Skills`="varchar(max)",
-             `Technical Skills`="varchar(max)")
-             )
-
+con <- mysqlconnection
+#merged_df |> 
+#dbCreateTable(con = conn, 
+#             name = "merged_df", 
+#             value = merged_df, 
+#             field.types = c(`Primary Key`="INTEGER(max)",
+#             `Job Posting Link`="varchar(max)",
+#             `Job Title`="varchar(max)",
+#             Company="varchar(max)",
+#             Platform="varchar(max)",
+ #            `Soft Skills`="varchar(max)",
+ #            `Technical Skills`="varchar(max)")
+ #            )
+#table was created
 
 dbWriteTable(conn = con,
              name = "merged_df",
              value = merged_df,            
              overwrite = TRUE)
 dbWriteTable(conn = con,
-             name = "Job_Names_Tidy",
+             name = "job_names_tidy",
              value = jn_df_final,            
              overwrite = TRUE)
 dbWriteTable(conn = con,
-             name = "Soft_Skills_Tidy",
+             name = "soft_skills_tidy",
              value = softskills_final,           
              overwrite = TRUE)
 src_dbi(mysqlconnection)
 ```
+<header>Conclusion:</header>
+The database included several tables.  The tables were conncected together based on the designated primary key column.  each data frame was put into the database.  The tables were all merged together into one table  called merged_df.  Python, SQL, R, Spark, tableau, machine learning were the most requested technical skills. The most requested soft skills were: communication, collaboration, working on a team, and problem solving.
